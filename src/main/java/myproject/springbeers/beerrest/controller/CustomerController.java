@@ -7,6 +7,7 @@ import myproject.springbeers.beerrest.services.CustomerService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,17 +22,17 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @GetMapping(CUSTOMER_PATH)
-    public List<CustomerDTO> listAllCustomers(){
+    public List<CustomerDTO> listAllCustomers() {
         return customerService.getAllCustomers();
     }
 
     @GetMapping(value = CUSTOMER_PATH_ID)
-    public CustomerDTO getCustomerById(@PathVariable("customerId") UUID id){
+    public CustomerDTO getCustomerById(@PathVariable("customerId") UUID id) {
         return customerService.getCustomerById(id).orElseThrow(NotFoundException::new);
     }
 
     @PostMapping(CUSTOMER_PATH)
-    public ResponseEntity<CustomerDTO> handlePost(@RequestBody CustomerDTO customer){
+    public ResponseEntity<CustomerDTO> handlePost(@Validated @RequestBody CustomerDTO customer) {
         CustomerDTO savedCustomer = customerService.saveNewCustomer(customer);
 
         HttpHeaders headers = new HttpHeaders();
@@ -42,9 +43,9 @@ public class CustomerController {
 
     @PutMapping(CUSTOMER_PATH_ID)
     public ResponseEntity<CustomerDTO> updateCustomerByID(@PathVariable("customerId") UUID customerId,
-                                                      @RequestBody CustomerDTO customer){
+                                                          @Validated @RequestBody CustomerDTO customer) {
 
-        if (customerService.updateCustomerById(customerId, customer).isEmpty()){
+        if (customerService.updateCustomerById(customerId, customer).isEmpty()) {
             throw new NotFoundException();
         }
 
@@ -53,7 +54,7 @@ public class CustomerController {
 
     @PatchMapping(CUSTOMER_PATH_ID)
     public ResponseEntity<CustomerDTO> patchCustomerById(@PathVariable("customerId") UUID customerId,
-                                                     @RequestBody CustomerDTO customer){
+                                                         @RequestBody CustomerDTO customer) {
 
         customerService.patchCustomerById(customerId, customer);
 
@@ -61,9 +62,9 @@ public class CustomerController {
     }
 
     @DeleteMapping(CUSTOMER_PATH_ID)
-    public ResponseEntity<CustomerDTO> deleteCustomerById(@PathVariable("customerId") UUID customerId){
+    public ResponseEntity<CustomerDTO> deleteCustomerById(@PathVariable("customerId") UUID customerId) {
 
-        if (!customerService.deleteCustomerById(customerId)){
+        if (!customerService.deleteCustomerById(customerId)) {
             throw new NotFoundException();
         }
 
